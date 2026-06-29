@@ -1,0 +1,224 @@
+====================================================================
+  SPRITE GUIDE — Dungeon Crawler Roguelike
+  Replaces the colored placeholder shapes in BootScene.js
+====================================================================
+
+HOW TO ADD A SPRITE
+-------------------
+1. Save your PNG into assets/sprites/<key>.png
+2. In src/scenes/BootScene.js, load it in the preload() method:
+     this.load.image('key', 'assets/sprites/key.png');
+3. Remove the matching this._make*() call in create() for that key.
+4. Make sure the texture dimensions match the notes below so hitboxes
+   stay correct. If you resize, update body.setSize() in the entity.
+
+
+====================================================================
+  PLAYER
+====================================================================
+Key:         player
+File:        assets/sprites/player.png
+Canvas size: 28 × 28 px   (or any power-of-two, keep it square)
+Hitbox:      22 × 22 px centred
+
+What to draw:
+  A top-down hero character viewed from above.
+  - Body should face downward (south) in the default frame.
+  - Colour palette: greens / teals (to distinguish from enemies).
+  - Optional: add 4-direction walk frames as a spritesheet:
+      Sheet layout: 4 columns × 4 rows
+      Columns: down, left, right, up
+      Rows: idle + 3 walk frames
+      Each frame: 28 × 28 px → sheet: 112 × 112 px
+      Then load with:
+        this.load.spritesheet('player', 'assets/sprites/player.png',
+          { frameWidth: 28, frameHeight: 28 });
+      And in Player.js add anims.create() calls.
+
+Placeholder appearance:
+  Green rounded rectangle body, lighter green head, black dot eyes.
+
+
+====================================================================
+  ENEMIES
+====================================================================
+
+---- SLIME ----
+Key:         enemy_slime
+File:        assets/sprites/enemy_slime.png
+Canvas size: 28 × 28 px
+Hitbox:      22 × 22 px
+
+What to draw:
+  A small, round, gelatinous blob.
+  - Blobby / elliptical silhouette, slightly squashed at the bottom.
+  - Two simple circular eyes near the top.
+  - Colour: bright green (the tint applied in-game is 0x44cc22, keep
+    your sprite mostly white/grey so tinting works, OR draw it in
+    full colour and remove the setTint() call in BootScene).
+  Stats reminder: HP 30, slow, melee. Weakest enemy.
+
+---- SKELETON ----
+Key:         enemy_skeleton
+File:        assets/sprites/enemy_skeleton.png
+Canvas size: 28 × 28 px
+
+What to draw:
+  Top-down skeleton warrior.
+  - Skull visible at top, ribcage in torso, arm/leg bones.
+  - Holding a rusty sword or no weapon.
+  - Colour: pale bone white / off-white.
+  Stats reminder: HP 55, medium speed, melee.
+
+---- BAT ----
+Key:         enemy_bat
+File:        assets/sprites/enemy_bat.png
+Canvas size: 28 × 28 px
+
+What to draw:
+  Small flying bat, top-down view.
+  - Wings spread wide left and right.
+  - Small body in the centre with glowing eyes.
+  - Colour: dark purple / dark grey.
+  Stats reminder: HP 20, FAST, erratic movement.
+
+---- GOLEM ----
+Key:         enemy_golem
+File:        assets/sprites/enemy_golem.png
+Canvas size: 28 × 28 px
+
+What to draw:
+  A chunky stone golem, top-down.
+  - Blocky stone body, large shoulders, no visible neck.
+  - Glowing gem eye or rune on chest.
+  - Colour: grey-blue stone tones.
+  Stats reminder: HP 120, SLOW, hits hard.
+
+---- BOSS (Floor Guardian) ----
+Key:         enemy_boss
+File:        assets/sprites/enemy_boss.png
+Canvas size: 36 × 36 px   (larger than normal enemies)
+Hitbox:      35 × 35 px
+
+What to draw:
+  A massive demon guardian, top-down.
+  - Large body with horns visible from above.
+  - Glowing yellow/orange eyes (wide apart).
+  - Claws / huge arms extending from the body.
+  - Colour: dark crimson / fiery orange accents.
+  Stats reminder: HP 400 (scales with floor), very dangerous.
+  Note: rendered at scale 1.6× in-game, so 36px sprite → ~58px on screen.
+
+
+====================================================================
+  ENVIRONMENT
+====================================================================
+
+---- FLOOR TILE ----
+Key:         tileset  (tile index 1, pixel offset x=32)
+Canvas size: 32 × 32 px  (part of a 96 × 32 px strip)
+
+What to draw (tile 1 of 3 in strip):
+  Dark stone floor tile.
+  - Subtle texture: cracks, mortar lines, or cobblestone pattern.
+  - Dark grey / dark blue-grey palette.
+  - Tileable (edges should connect seamlessly).
+
+---- WALL TILE ----
+Key:         tileset  (tile index 2, pixel offset x=64)
+Canvas size: 32 × 32 px
+
+What to draw (tile 3 of 3 in strip):
+  Stone dungeon wall.
+  - Clearly darker / more solid than floor.
+  - Bricks or rough stone texture.
+  - Should look like the top face of a wall block.
+
+HOW TO REPLACE THE TILESET:
+  1. Create a 96 × 32 image with 3 tiles side by side:
+       x=0:  black void
+       x=32: floor tile
+       x=64: wall tile
+  2. Save as assets/sprites/tileset.png
+  3. In BootScene.js, add to preload():
+       this.load.image('tileset', 'assets/sprites/tileset.png');
+  4. Remove the this._makeTileset() call from create().
+  5. No other changes needed — the tilemap system already uses 'tileset'.
+
+
+====================================================================
+  OBJECTS / ITEMS
+====================================================================
+
+---- CHEST (CLOSED) ----
+Key:         chest_closed
+File:        assets/sprites/chest_closed.png
+Canvas size: 28 × 22 px
+
+What to draw:
+  Wooden treasure chest, viewed from slight top-down angle.
+  - Lid clearly closed, metal latch/lock visible.
+  - Brown/gold colour scheme.
+
+---- CHEST (OPEN) ----
+Key:         chest_open
+File:        assets/sprites/chest_open.png
+Canvas size: 28 × 22 px
+
+What to draw:
+  Same chest with lid open.
+  - Dark interior visible.
+  - Maybe a sparkle or glow inside.
+
+---- ITEM PICKUP STAR ----
+Key:         item_pickup
+File:        assets/sprites/item_pickup.png
+Canvas size: 20 × 20 px
+
+What to draw:
+  A generic loot icon (star, orb, or gem).
+  - This is tinted at runtime to match each item's colour.
+  - Draw it WHITE / light grey so tinting works correctly.
+  - Simple sparkle, star, or jewel shape.
+
+---- STAIRS (FLOOR EXIT) ----
+Key:         stairs
+File:        assets/sprites/stairs.png
+Canvas size: 28 × 28 px
+
+What to draw:
+  A glowing portal or staircase icon, top-down.
+  - Blue/teal glow, spiral or downward-arrow motif.
+  - Should look inviting — it's the level exit.
+  - Hidden (alpha 0.3) until the boss is defeated; then revealed.
+
+
+====================================================================
+  UI ICONS
+====================================================================
+
+---- HEART ICON ----
+Key:         icon_heart
+File:        assets/sprites/icon_heart.png
+Canvas size: 16 × 16 px
+
+What to draw:
+  Classic red heart shape for the HP display.
+  - Keep it simple and readable at small size.
+
+
+====================================================================
+  NOTES ON ANIMATION
+====================================================================
+The current game uses static sprites only.
+To add walking animations:
+1. Create spritesheets with frames laid out in a single row or grid.
+2. Load with this.load.spritesheet() instead of this.load.image().
+3. In the entity constructor, call:
+     this.anims.create({ key: 'walk', frames: ..., frameRate: 8, repeat: -1 });
+     this.anims.play('walk');
+4. In update(), switch animation based on velocity direction.
+
+====================================================================
+  END OF SPRITE GUIDE
+====================================================================
