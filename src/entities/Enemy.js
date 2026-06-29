@@ -32,7 +32,9 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   takeDamage(amount, player) {
-    // Slight flash
+    // Guard: ignore hits on already-dead enemies (auto-attack can overlap with death frame)
+    if (!this.active) return;
+
     this.setTint(0xffffff);
     this.scene.time.delayedCall(80, () => { if (this.active) this.clearTint(); });
 
@@ -43,36 +45,44 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
       player.heal(amount * player.lifeSteal);
     }
 
-    // Floating damage number
     this._showDmgNumber(amount);
 
     if (this.hp <= 0) this._die(player);
   }
 
   _die(player) {
-    this._hpBg.destroy();
-    this._hpBar.destroy();
+    // Capture refs before destroy() nulls them
+    const scene  = this.scene;
+    const x      = this.x;
+    const y      = this.y;
+    const tint   = this.template.tint;
 
-    // Death particles (simple burst)
+    if (this._hpBg.active)  this._hpBg.destroy();
+    if (this._hpBar.active) this._hpBar.destroy();
+
+    // Destroy BEFORE emitting so that active=false when GameScene checks for
+    // remaining enemies (boss-stair activation logic needs the dying enemy gone)
+    this.destroy();
+
+    // Death particles (scene ref saved above)
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
-      const p = this.scene.add.circle(this.x, this.y, 4, this.template.tint)
-        .setDepth(C.DEPTH_FX);
-      this.scene.tweens.add({
+      const p = scene.add.circle(x, y, 4, tint).setDepth(C.DEPTH_FX);
+      scene.tweens.add({
         targets: p,
-        x: this.x + Math.cos(angle) * 30,
-        y: this.y + Math.sin(angle) * 30,
+        x: x + Math.cos(angle) * 30,
+        y: y + Math.sin(angle) * 30,
         alpha: 0,
         duration: 300,
         onComplete: () => p.destroy(),
       });
     }
 
-    this.scene.events.emit('enemy_killed', this, player);
-    this.destroy();
+    scene.events.emit('enemy_killed', this, player);
   }
 
   _showDmgNumber(amount) {
+    if (!this.scene) return;
     const txt = this.scene.add.text(this.x, this.y - 10, `-${Math.round(amount)}`, {
       fontSize: '12px', fill: '#ff6666', stroke: '#000', strokeThickness: 2,
     }).setDepth(C.DEPTH_FX).setOrigin(0.5);

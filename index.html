@@ -7,6 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Dungeon Crawler Roguelike</title>
+  <link rel="icon" href="data:,">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -22,8 +23,10 @@
   </style>
 </head>
 <body>
-  <!-- Phaser 3 from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <!-- Phaser 3 — local copy (installed via npm install phaser@3.60.0)
+       For production you can swap this line to the CDN version:
+       <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script> -->
+  <script src="node_modules/phaser/dist/phaser.min.js"></script>
 
   <!-- Game constants (must load first) -->
   <script src="src/constants.js"></script>

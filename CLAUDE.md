@@ -120,6 +120,9 @@ php -S localhost:8080
 ```
 Open `http://localhost:8080` in Chrome / Safari on phone or desktop.
 
+**Phaser note:** `node_modules/phaser/dist/phaser.min.js` is the local copy (installed via `npm install phaser@3.60.0`).
+For production / external hosting, swap index.html line to the CDN URL commented above it.
+
 ---
 
 ## Known limitations / future work

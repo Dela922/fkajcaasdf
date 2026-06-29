@@ -113,10 +113,23 @@ class BootScene extends Phaser.Scene {
   // ── Item pickup sprite 20×20 ─────────────────────────────
   _makeItem() {
     const g = this.make.graphics({ add: false });
-    g.fillStyle(0xffcc00, 0.9); g.fillStar(10, 10, 5, 9, 5);
-    g.lineStyle(1, 0xaa8800); g.strokeStar(10, 10, 5, 9, 5);
+    const pts = this._starPoints(10, 10, 9, 5, 5);
+    g.fillStyle(0xffcc00, 1);
+    g.fillPoints(pts, true);
+    g.lineStyle(1.5, 0xaa8800, 1);
+    g.strokePoints(pts, true);
     g.generateTexture('item_pickup', 20, 20);
     g.destroy();
+  }
+
+  _starPoints(cx, cy, outerR, innerR, numPoints) {
+    const pts = [];
+    for (let i = 0; i < numPoints * 2; i++) {
+      const angle = (i * Math.PI) / numPoints - Math.PI / 2;
+      const r = i % 2 === 0 ? outerR : innerR;
+      pts.push({ x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r });
+    }
+    return pts;
   }
 
   // ── Chest sprite 28×22 ──────────────────────────────────
